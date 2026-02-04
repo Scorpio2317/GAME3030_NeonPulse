@@ -6,29 +6,40 @@ public class MouseController : MonoBehaviour
     public float mouseSensitivity = 100.0f;
     public Transform playerBody;
 
-    private float XRotation = 0.0f;
+    private float xRotation = 0.0f;
 
     [SerializeField]
     InputActionAsset inputActions;
-    InputAction mousePos;
+    InputAction lookAction;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        mousePos = inputActions.FindAction("Point");
+        lookAction = inputActions.FindAction("Look", true);
     }
 
-    // Update is called once per frame
+    void OnEnable()
+    {
+        lookAction.Enable();
+    }
+
+    void OnDisable()
+    {
+        lookAction.Disable();
+    }
+
     void Update()
     {
-        float mouseX = mousePos.ReadValue<Vector2>().x * mouseSensitivity;
-        float mouseY = mousePos.ReadValue<Vector2>().y * mouseSensitivity;
+        Vector2 look = lookAction.ReadValue<Vector2>();
 
-        XRotation -= mouseY;
-        XRotation = Mathf.Clamp(XRotation, -90.0f, 90.0f);
+        float mouseX = look.x * mouseSensitivity * Time.deltaTime;
+        float mouseY = look.y * mouseSensitivity * Time.deltaTime;
 
-        transform.localRotation = Quaternion.Euler(XRotation, 0.0f, 0.0f);
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
         playerBody.Rotate(Vector3.up * mouseX);
+
     }
 }
