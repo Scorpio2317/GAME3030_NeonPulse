@@ -1,60 +1,74 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public CharacterController controller;
-
-    [Header("Movement Properties")]
+    [Header("Movement")]
     public float maxSpeed = 10.0f;
+    public float sprintSpeed = 16.0f;
     public float gravity = -30.0f;
     public float jumpHeight = 3.0f;
-    public Vector3 velocity;
 
-    [Header("Ground Detection Properties")]
+    [Header("Ground Detection")]
     public Transform groundPoint;
     public float groundRadius = 0.5f;
     public LayerMask groundMask;
     public bool isGrounded;
 
-    [SerializeField]
-    InputActionAsset inputActions;
+    [SerializeField] InputActionAsset inputActions;
     InputAction movementInput;
     InputAction jumpInput;
+    InputAction sprintInput;
 
+    CharacterController controller;
 
-    // Start is called before the first frame update
+    [HideInInspector] public Vector3 velocity;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
         movementInput = inputActions.FindAction("Move");
         jumpInput = inputActions.FindAction("Jump");
+        sprintInput = inputActions.FindAction("Sprint");
     }
 
-    // Update is called once per frame
+    void OnEnable()
+    {
+        movementInput?.Enable();
+        jumpInput?.Enable();
+        sprintInput?.Enable();
+    }
+
+    void OnDisable()
+    {
+        movementInput?.Disable();
+        jumpInput?.Disable();
+        sprintInput?.Disable();
+    }
+
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundPoint.position, groundRadius, groundMask);
 
         if (isGrounded && velocity.y < 0.0f)
-        {
             velocity.y = -2.0f;
-        }
 
         float x = movementInput.ReadValue<Vector2>().x;
         float z = movementInput.ReadValue<Vector2>().y;
 
+        bool isSprinting = sprintInput.IsPressed() && z > 0;
+        float currentSpeed = isSprinting ? sprintSpeed : maxSpeed;
+
         Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * maxSpeed * Time.deltaTime);
+        controller.Move(move * currentSpeed * Time.deltaTime);
 
         if (jumpInput.IsPressed() && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
         }
 
-        velocity.y += gravity * Time.deltaTime;
 
+        velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
