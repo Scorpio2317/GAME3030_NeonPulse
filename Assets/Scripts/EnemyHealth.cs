@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -14,7 +15,6 @@ public class EnemyHealth : MonoBehaviour
     void TakeDamage(float amount)
     {
         currentHealth -= amount;
-        Debug.Log(gameObject.name + " took " + amount + " damage. HP: " + currentHealth);
 
         if (currentHealth <= 0f)
             Die();
@@ -22,7 +22,13 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log(gameObject.name + " died.");
-        Destroy(gameObject);
+        Animator anim = GetComponentInChildren<Animator>();
+        if (anim != null)
+            anim.SetTrigger("Die");
+
+        GetComponent<EnemyAI>().enabled = false;
+        GetComponent<NavMeshAgent>().enabled = false;
+
+        Destroy(gameObject, 3f);
     }
 }

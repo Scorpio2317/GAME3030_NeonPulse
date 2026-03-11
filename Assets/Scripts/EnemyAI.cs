@@ -18,11 +18,14 @@ public class EnemyAI : MonoBehaviour
 
     private Transform player;
     private NavMeshAgent agent;
+    private Animator animator;
     private float attackTimer;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+
+        animator = GetComponentInChildren<Animator>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
@@ -47,14 +50,17 @@ public class EnemyAI : MonoBehaviour
         {
             case State.Idle:
                 agent.ResetPath();
+                animator?.SetBool("isMoving", false);
                 break;
 
             case State.Chase:
                 agent.SetDestination(player.position);
+                animator?.SetBool("isMoving", true);
                 break;
 
             case State.Attack:
                 agent.ResetPath();
+                animator?.SetBool("isMoving", false);
 
                 // Face player on Y axis only
                 Vector3 lookDir = player.position - transform.position;
