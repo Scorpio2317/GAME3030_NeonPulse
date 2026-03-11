@@ -2729,11 +2729,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a78b90923cf7d784ab698c3a3c74af4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  controller: {fileID: 1882994449}
-  maxSpeed: 8
+  maxSpeed: 5
+  sprintSpeed: 8
   gravity: -19.62
   jumpHeight: 2
-  velocity: {x: 0, y: 0, z: 0}
   groundPoint: {fileID: 6386386607039371384}
   groundRadius: 0.4
   groundMask:
@@ -2741,6 +2740,7 @@ MonoBehaviour:
     m_Bits: 64
   isGrounded: 0
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1882994451
 MonoBehaviour:
   m_ObjectHideFlags: 0
