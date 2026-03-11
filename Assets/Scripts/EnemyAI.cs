@@ -37,17 +37,11 @@ public class EnemyAI : MonoBehaviour
 
         // State transitions
         if (distanceToPlayer > detectionRange)
-        {
             currentState = State.Idle;
-        }
-        else if (distanceToPlayer > preferredRange)
-        {
+        else if (distanceToPlayer > preferredRange || !HasLineOfSight())
             currentState = State.Chase;
-        }
         else
-        {
             currentState = State.Attack;
-        }
 
         switch (currentState)
         {
@@ -62,7 +56,7 @@ public class EnemyAI : MonoBehaviour
             case State.Attack:
                 agent.ResetPath();
 
-                // Face player on Y axis only (don't tilt up/down)
+                // Face player on Y axis only
                 Vector3 lookDir = player.position - transform.position;
                 lookDir.y = 0;
                 transform.rotation = Quaternion.LookRotation(lookDir);
@@ -77,20 +71,39 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    bool IsPlayer(Collider col)
+    {
+        return col.CompareTag("Player") || col.transform.root.CompareTag("Player");
+    }
+
+    bool HasLineOfSight()
+    {
+        Vector3 origin = transform.position + Vector3.up * 1f;
+        Vector3 dirToPlayer = (player.position + Vector3.up * 0.5f - origin).normalized;
+        float distToPlayer = Vector3.Distance(origin, player.position + Vector3.up * 0.5f);
+
+        if (Physics.Raycast(origin, dirToPlayer, out RaycastHit hit, distToPlayer))
+        {
+            return IsPlayer(hit.collider);
+        }
+
+        return true;
+    }
+
     void Shoot()
     {
-        // Shoot from eye level
         Vector3 origin = transform.position + Vector3.up * 1f;
-        Vector3 dirToPlayer = (player.position + Vector3.up * 1f - origin).normalized;
+        Vector3 dirToPlayer = (player.position + Vector3.up * 0.5f - origin).normalized;
 
+        // Apply accuracy spread
         float spreadX = Random.Range(-accuracySpread, accuracySpread);
         float spreadY = Random.Range(-accuracySpread, accuracySpread);
         dirToPlayer = Quaternion.Euler(spreadY, spreadX, 0) * dirToPlayer;
 
         if (Physics.Raycast(origin, dirToPlayer, out RaycastHit hit, shootDistance))
         {
-            if (hit.collider.CompareTag("Player"))
-                hit.collider.SendMessage("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
+            if (IsPlayer(hit.collider))
+                hit.collider.SendMessageUpwards("TakeDamage", attackDamage, SendMessageOptions.DontRequireReceiver);
         }
 
         Debug.DrawRay(origin, dirToPlayer * shootDistance, Color.yellow, 0.2f);
@@ -98,11 +111,9 @@ public class EnemyAI : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        // detection range
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // preferred shooting range
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, preferredRange);
     }
