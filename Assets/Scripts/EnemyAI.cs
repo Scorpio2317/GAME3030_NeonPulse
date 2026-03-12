@@ -51,16 +51,19 @@ public class EnemyAI : MonoBehaviour
             case State.Idle:
                 agent.ResetPath();
                 animator?.SetBool("isMoving", false);
+                animator?.SetBool("isAttacking", false);
                 break;
 
             case State.Chase:
                 agent.SetDestination(player.position);
                 animator?.SetBool("isMoving", true);
+                animator?.SetBool("isAttacking", false);
                 break;
 
             case State.Attack:
                 agent.ResetPath();
                 animator?.SetBool("isMoving", false);
+                animator?.SetBool("isAttacking", true);
 
                 // Face player on Y axis only
                 Vector3 lookDir = player.position - transform.position;
