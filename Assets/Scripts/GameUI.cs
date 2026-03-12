@@ -17,6 +17,11 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Slider healthBar;
     [SerializeField] private Image damageVignette;
 
+    [Header("Hitmarker")]
+    [SerializeField] private Image hitmarkerImage;
+    [SerializeField] private float hitmarkerDuration = 0.1f;
+    private float hitmarkerTimer;
+
     [Header("Death Screen")]
     [SerializeField] private GameObject deathScreen;
 
@@ -24,6 +29,7 @@ public class GameUI : MonoBehaviour
     {
         UpdateAmmoUI();
         UpdateHealthUI();
+        UpdateHitmarker();
         UpdateDeathScreen();
     }
 
@@ -54,6 +60,22 @@ public class GameUI : MonoBehaviour
             c.a = alpha * 0.6f;
             damageVignette.color = c;
         }
+    }
+
+    public void ShowHitmarker()
+    {
+        hitmarkerTimer = hitmarkerDuration;
+    }
+
+    void UpdateHitmarker()
+    {
+        if (hitmarkerImage == null) return;
+
+        hitmarkerTimer -= Time.deltaTime;
+        float alpha = Mathf.Clamp01(hitmarkerTimer / hitmarkerDuration);
+        Color c = hitmarkerImage.color;
+        c.a = alpha;
+        hitmarkerImage.color = c;
     }
 
     void UpdateDeathScreen()

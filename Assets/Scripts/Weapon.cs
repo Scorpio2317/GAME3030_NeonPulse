@@ -38,6 +38,7 @@ public class Weapon : MonoBehaviour
     private InputAction attackAction;
     private InputAction reloadAction;
     private float timeUntilNextShot;
+    private GameUI gameUI;
 
     void Awake()
     {
@@ -48,6 +49,7 @@ public class Weapon : MonoBehaviour
             cameraTransform = Camera.main.transform;
 
         currentAmmo = magazineSize;
+        gameUI = FindFirstObjectByType<GameUI>();
     }
 
     void OnEnable()
@@ -104,6 +106,7 @@ public class Weapon : MonoBehaviour
             {
                 SpawnHitParticle(bloodHitParticle, hit);
                 hit.collider.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+                gameUI?.ShowHitmarker();
             }
             else
             {
