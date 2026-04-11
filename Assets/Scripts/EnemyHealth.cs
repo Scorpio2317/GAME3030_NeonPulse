@@ -29,6 +29,8 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<EnemyAI>().enabled = false;
         GetComponent<NavMeshAgent>().enabled = false;
 
+        WaveManager.Instance?.OnEnemyKilled();
+
         Destroy(gameObject, 3f);
     }
 }

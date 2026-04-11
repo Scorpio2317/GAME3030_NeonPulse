@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,8 +23,15 @@ public class GameUI : MonoBehaviour
     [SerializeField] private float hitmarkerDuration = 0.1f;
     private float hitmarkerTimer;
 
-    [Header("Death Screen")]
+    [Header("Wave & Score UI")]
+    [SerializeField] private TextMeshProUGUI waveText;
+    [SerializeField] private TextMeshProUGUI killCountText;
+    [SerializeField] private TextMeshProUGUI waveBannerText;
+    [SerializeField] private float waveBannerDuration = 2.5f;
+
+    [Header("Screens")]
     [SerializeField] private GameObject deathScreen;
+    [SerializeField] private GameObject victoryScreen;
 
     void Update()
     {
@@ -31,12 +39,12 @@ public class GameUI : MonoBehaviour
         UpdateHealthUI();
         UpdateHitmarker();
         UpdateDeathScreen();
+        UpdateWaveUI();
     }
 
     void UpdateAmmoUI()
     {
-        if (weapon == null) 
-            return;
+        if (weapon == null) return;
 
         ammoText.text = weapon.currentAmmo + " / " + weapon.reserveAmmo;
         reloadText.gameObject.SetActive(weapon.isReloading);
@@ -44,14 +52,10 @@ public class GameUI : MonoBehaviour
 
     void UpdateHealthUI()
     {
-        if (playerHealth == null) 
-            return;
+        if (playerHealth == null) return;
 
         if (healthBar != null)
-        {
             healthBar.value = playerHealth.currentHealth / playerHealth.maxHealth;
-        }
-
 
         if (damageVignette != null)
         {
@@ -80,10 +84,41 @@ public class GameUI : MonoBehaviour
 
     void UpdateDeathScreen()
     {
-        if (playerHealth == null || deathScreen == null) 
-            return;
+        if (playerHealth == null || deathScreen == null) return;
 
         deathScreen.SetActive(playerHealth.IsDead);
+    }
+
+    void UpdateWaveUI()
+    {
+        if (WaveManager.Instance == null) return;
+
+        if (waveText != null)
+            waveText.text = "WAVE " + WaveManager.Instance.currentWave;
+
+        if (killCountText != null)
+            killCountText.text = "Kills: " + WaveManager.Instance.killCount;
+    }
+
+    public void ShowWaveBanner(int wave)
+    {
+        if (waveBannerText == null) return;
+        StopCoroutine("WaveBannerRoutine");
+        StartCoroutine(WaveBannerRoutine(wave));
+    }
+
+    IEnumerator WaveBannerRoutine(int wave)
+    {
+        waveBannerText.text = "WAVE " + wave;
+        waveBannerText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(waveBannerDuration);
+        waveBannerText.gameObject.SetActive(false);
+    }
+
+    public void ShowVictory()
+    {
+        if (victoryScreen != null)
+            victoryScreen.SetActive(true);
     }
 
     public void RestartGame()
