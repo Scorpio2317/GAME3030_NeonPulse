@@ -5,7 +5,8 @@ public class EnemyHealth : MonoBehaviour
 {
     [Header("Health")]
     public float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth { get; private set; }
+    private bool isDead = false;
 
     void Start()
     {
@@ -14,6 +15,8 @@ public class EnemyHealth : MonoBehaviour
 
     void TakeDamage(float amount)
     {
+        if (isDead) return;
+
         currentHealth -= amount;
 
         if (currentHealth <= 0f)
@@ -22,6 +25,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        isDead = true;
         Animator anim = GetComponentInChildren<Animator>();
         if (anim != null)
             anim.SetTrigger("Die");
