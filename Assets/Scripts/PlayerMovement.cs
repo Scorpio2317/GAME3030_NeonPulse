@@ -24,12 +24,16 @@ public class PlayerMovement : MonoBehaviour
 
     [HideInInspector] public Vector3 velocity;
 
-    void Start()
+    void Awake()
     {
-        controller = GetComponent<CharacterController>();
         movementInput = inputActions.FindAction("Move");
         jumpInput = inputActions.FindAction("Jump");
         sprintInput = inputActions.FindAction("Sprint");
+    }
+
+    void Start()
+    {
+        controller = GetComponent<CharacterController>();
     }
 
     void OnEnable()
