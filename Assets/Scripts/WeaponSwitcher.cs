@@ -28,9 +28,11 @@ public class WeaponSwitcher : MonoBehaviour
     {
         if (index < 0 || index >= weapons.Length) return;
 
+        // Disable others first, then enable the selected one
         for (int i = 0; i < weapons.Length; i++)
-            weapons[i].gameObject.SetActive(i == index);
+            if (i != index) weapons[i].gameObject.SetActive(false);
 
+        weapons[index].gameObject.SetActive(true);
         currentIndex = index;
     }
 }

@@ -2598,8 +2598,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f691413ae251bb64b90f1d9dc93accac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
-  enemyPrefabs:
-  - {fileID: 3273255153658337309, guid: 81ee019f741464e469e985392216e0f4, type: 3}
+  normalEnemyPrefab: {fileID: 3273255153658337309, guid: 81ee019f741464e469e985392216e0f4, type: 3}
+  heavyEnemyPrefab: {fileID: 7357199573783844808, guid: b1eb6cd5e7865cd4c8b09589b90fbaeb, type: 3}
+  heavyStartWave: 3
+  heavySpawnChance: 0.25
   spawnPoints:
   - {fileID: 184803691}
   - {fileID: 302611875}
@@ -51164,7 +51166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
   fireRate: 2
   hitscanDistance: 250
-  damage: 25
+  damage: 40
   pelletCount: 8
   pelletSpread: 6
   magazineSize: 8

@@ -6,7 +6,13 @@ public class WaveManager : MonoBehaviour
     public static WaveManager Instance { get; private set; }
 
     [Header("Enemy Prefabs")]
-    public GameObject[] enemyPrefabs;
+    public GameObject normalEnemyPrefab;
+    public GameObject heavyEnemyPrefab;
+
+    [Header("Heavy Enemy Settings")]
+    public int heavyStartWave = 3;
+    [Range(0f, 0.49f)]
+    public float heavySpawnChance = 0.25f;
 
     [Header("Spawn Points")]
     public Transform[] spawnPoints;
@@ -64,10 +70,15 @@ public class WaveManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        if (spawnPoints.Length == 0 || enemyPrefabs.Length == 0) return;
+        if (spawnPoints.Length == 0 || normalEnemyPrefab == null) return;
 
         Transform point = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+        bool spawnHeavy = heavyEnemyPrefab != null
+                          && currentWave >= heavyStartWave
+                          && Random.value < heavySpawnChance;
+
+        GameObject prefab = spawnHeavy ? heavyEnemyPrefab : normalEnemyPrefab;
         Instantiate(prefab, point.position, point.rotation);
         enemiesAlive++;
     }

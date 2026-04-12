@@ -71,6 +71,9 @@ public class Weapon : MonoBehaviour
     {
         attackAction.Disable();
         reloadAction.Disable();
+
+        StopAllCoroutines();
+        isReloading = false;
     }
 
     void Update()
@@ -85,7 +88,8 @@ public class Weapon : MonoBehaviour
             return;
 
         bool sprinting = playerMovement != null && playerMovement.isSprinting;
-        weaponAnimator?.SetBool("isRunning", sprinting);
+        if (automatic)
+            weaponAnimator?.SetBool("isRunning", sprinting);
 
         if (sprinting)
         {

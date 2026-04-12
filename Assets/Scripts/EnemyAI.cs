@@ -6,6 +6,9 @@ public class EnemyAI : MonoBehaviour
     public enum State { Idle, Chase, Attack }
     public State currentState = State.Idle;
 
+    [Header("Movement")]
+    public float moveSpeed = 3.5f;
+
     [Header("Detection")]
     public float detectionRange = 30f;
     public float preferredRange = 12f;
@@ -24,6 +27,7 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.speed = moveSpeed;
 
         animator = GetComponentInChildren<Animator>();
 
