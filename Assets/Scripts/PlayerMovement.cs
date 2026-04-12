@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     CharacterController controller;
 
     [HideInInspector] public Vector3 velocity;
+    [HideInInspector] public bool isSprinting;
 
     void Awake()
     {
@@ -60,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         float x = movementInput.ReadValue<Vector2>().x;
         float z = movementInput.ReadValue<Vector2>().y;
 
-        bool isSprinting = sprintInput.IsPressed() && z > 0;
+        isSprinting = sprintInput.IsPressed() && z > 0;
         float currentSpeed = isSprinting ? sprintSpeed : maxSpeed;
 
         Vector3 move = transform.right * x + transform.forward * z;

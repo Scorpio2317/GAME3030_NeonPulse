@@ -19,7 +19,9 @@ public class Weapon : MonoBehaviour
     public int magazineSize = 30;
     public int currentAmmo;
     public int reserveAmmo = 90;
-    public float reloadTime = 1.5f;
+    public float reloadTime = 1.07f;          // ReloadOne clip length
+    public float priorToReloadTime = 0.67f;   // PriorToReload clip length
+    public float reloadLastTime = 0.53f;      // ReloadLastOne clip length
     public bool isReloading { get; private set; }
 
     [Header("Fire Mode")]
@@ -33,6 +35,7 @@ public class Weapon : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform muzzlePoint;
+    [SerializeField] private Animator weaponAnimator;
 
     [Header("VFX")]
     [SerializeField] private GameObject concreteHitParticle;
@@ -43,6 +46,7 @@ public class Weapon : MonoBehaviour
     private InputAction reloadAction;
     private float timeUntilNextShot;
     private GameUI gameUI;
+    private PlayerMovement playerMovement;
 
     void Awake()
     {
@@ -54,6 +58,7 @@ public class Weapon : MonoBehaviour
 
         currentAmmo = magazineSize;
         gameUI = FindFirstObjectByType<GameUI>();
+        playerMovement = GetComponentInParent<PlayerMovement>();
     }
 
     void OnEnable()
@@ -76,8 +81,17 @@ public class Weapon : MonoBehaviour
         if (reloadAction.WasPressedThisFrame() && !isReloading && currentAmmo < magazineSize && reserveAmmo > 0)
             StartCoroutine(Reload());
 
-        if (isReloading) 
+        if (isReloading)
             return;
+
+        bool sprinting = playerMovement != null && playerMovement.isSprinting;
+        weaponAnimator?.SetBool("isRunning", sprinting);
+
+        if (sprinting)
+        {
+            weaponAnimator?.SetBool("isShooting", false);
+            return;
+        }
 
         bool wantShoot = automatic ? attackAction.IsPressed() : attackAction.WasPressedThisFrame();
 
@@ -94,6 +108,10 @@ public class Weapon : MonoBehaviour
                 StartCoroutine(Reload());
             }
         }
+
+        if (automatic)
+            weaponAnimator?.SetBool("isShooting", wantShoot && currentAmmo > 0 && !isReloading);
+
     }
 
     void Shoot()
@@ -101,6 +119,8 @@ public class Weapon : MonoBehaviour
         currentAmmo--;
 
         SpawnMuzzleFlash();
+        if (!automatic)
+            weaponAnimator?.SetTrigger("Shoot");
 
         bool hitEnemy = false;
 
@@ -141,14 +161,44 @@ public class Weapon : MonoBehaviour
     IEnumerator Reload()
     {
         isReloading = true;
-        Debug.Log("Reloading...");
 
-        yield return new WaitForSeconds(reloadTime);
+        if (automatic)
+        {
+            // Standard reload: play once, load all ammo at end
+            weaponAnimator?.SetTrigger("Reload");
+            yield return new WaitForSeconds(reloadTime);
 
-        int bulletsNeeded = magazineSize - currentAmmo;
-        int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
-        currentAmmo += bulletsToLoad;
-        reserveAmmo -= bulletsToLoad;
+            int bulletsNeeded = magazineSize - currentAmmo;
+            int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
+            currentAmmo += bulletsToLoad;
+            reserveAmmo -= bulletsToLoad;
+        }
+        else
+        {
+            // PriorToReload — prep animation plays once
+            weaponAnimator?.SetTrigger("ReloadStart");
+            yield return new WaitForSeconds(priorToReloadTime);
+
+            // Load shells one by one
+            while (currentAmmo < magazineSize && reserveAmmo > 0)
+            {
+                bool isLastShell = (currentAmmo == magazineSize - 1) || (reserveAmmo == 1);
+
+                if (isLastShell)
+                {
+                    weaponAnimator?.SetTrigger("ReloadLast");
+                    yield return new WaitForSeconds(reloadLastTime);
+                }
+                else
+                {
+                    weaponAnimator?.SetTrigger("ReloadShell");
+                    yield return new WaitForSeconds(reloadTime);
+                }
+
+                currentAmmo++;
+                reserveAmmo--;
+            }
+        }
 
         isReloading = false;
     }
