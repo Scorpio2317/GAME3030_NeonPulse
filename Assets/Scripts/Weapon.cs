@@ -11,6 +11,10 @@ public class Weapon : MonoBehaviour
     [Header("Damage")]
     public float damage = 25f;
 
+    [Header("Pellets")]
+    [SerializeField] private int pelletCount = 1;
+    [SerializeField] private float pelletSpread = 0f;
+
     [Header("Ammo")]
     public int magazineSize = 30;
     public int currentAmmo;
@@ -98,23 +102,40 @@ public class Weapon : MonoBehaviour
 
         SpawnMuzzleFlash();
 
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        bool hitEnemy = false;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, hitscanDistance))
+        for (int i = 0; i < pelletCount; i++)
         {
-            if (hit.collider.CompareTag("Enemy"))
+            Vector3 direction = cameraTransform.forward;
+
+            if (pelletSpread > 0f)
             {
-                SpawnHitParticle(bloodHitParticle, hit);
-                hit.collider.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
-                gameUI?.ShowHitmarker();
+                float spreadX = Random.Range(-pelletSpread, pelletSpread);
+                float spreadY = Random.Range(-pelletSpread, pelletSpread);
+                direction = Quaternion.Euler(spreadY, spreadX, 0f) * direction;
             }
-            else
+
+            Ray ray = new Ray(cameraTransform.position, direction);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, hitscanDistance))
             {
-                SpawnHitParticle(concreteHitParticle, hit);
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    SpawnHitParticle(bloodHitParticle, hit);
+                    hit.collider.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+                    hitEnemy = true;
+                }
+                else
+                {
+                    SpawnHitParticle(concreteHitParticle, hit);
+                }
             }
+
+            Debug.DrawRay(ray.origin, ray.direction * hitscanDistance, Color.red, 0.1f);
         }
 
-        Debug.DrawRay(ray.origin, ray.direction * hitscanDistance, Color.red, 0.1f);
+        if (hitEnemy)
+            gameUI?.ShowHitmarker();
     }
 
     IEnumerator Reload()

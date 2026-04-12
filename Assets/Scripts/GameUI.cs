@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GameUI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Weapon weapon;
+    [SerializeField] private WeaponSwitcher weaponSwitcher;
     [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Ammo UI")]
@@ -44,6 +44,7 @@ public class GameUI : MonoBehaviour
 
     void UpdateAmmoUI()
     {
+        Weapon weapon = weaponSwitcher?.CurrentWeapon;
         if (weapon == null) return;
 
         ammoText.text = weapon.currentAmmo + " / " + weapon.reserveAmmo;
