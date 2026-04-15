@@ -3758,7 +3758,7 @@ GameObject:
   - component: {fileID: 7753063618355140390}
   m_Layer: 0
   m_Name: HeavyEnemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3793,7 +3793,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: fe6e776b831a436408a168f83825586a, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -3835,6 +3835,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
+  scoreValue: 100
 --- !u!195 &-8959914384109268457
 NavMeshAgent:
   m_ObjectHideFlags: 0

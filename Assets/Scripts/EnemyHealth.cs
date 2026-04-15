@@ -8,6 +8,9 @@ public class EnemyHealth : MonoBehaviour
     public float currentHealth { get; private set; }
     private bool isDead = false;
 
+    [Header("Score")]
+    public int scoreValue = 100;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -33,7 +36,7 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<EnemyAI>().enabled = false;
         GetComponent<NavMeshAgent>().enabled = false;
 
-        WaveManager.Instance?.OnEnemyKilled();
+        WaveManager.Instance?.OnEnemyKilled(scoreValue);
 
         Destroy(gameObject, 3f);
     }

@@ -22,11 +22,15 @@ public class WaveManager : MonoBehaviour
     public int enemiesAddedPerWave = 2;
     public float timeBetweenWaves = 5f;
     public float timeBetweenSpawns = 0.5f;
-    public int totalWaves = 10; // 0 = endless
+    public int totalWaves = 10;
 
+    // Read by GameUI
     [HideInInspector] public int currentWave = 0;
     [HideInInspector] public int killCount = 0;
+    [HideInInspector] public int totalScore = 0;
     [HideInInspector] public int enemiesAlive = 0;
+    [HideInInspector] public float countdownTimer = 0f;
+    [HideInInspector] public bool isCountingDown = false;
 
     private bool spawning = false;
     private GameUI gameUI;
@@ -44,11 +48,18 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator StartNextWave()
     {
-        yield return new WaitForSeconds(timeBetweenWaves);
+        // Countdown between waves
+        isCountingDown = true;
+        countdownTimer = timeBetweenWaves;
 
+        while (countdownTimer > 0f)
+        {
+            countdownTimer -= Time.deltaTime;
+            yield return null;
+        }
+
+        isCountingDown = false;
         currentWave++;
-
-        gameUI?.ShowWaveBanner(currentWave);
 
         int count = baseEnemiesPerWave + (currentWave - 1) * enemiesAddedPerWave;
 
@@ -83,9 +94,10 @@ public class WaveManager : MonoBehaviour
         enemiesAlive++;
     }
 
-    public void OnEnemyKilled()
+    public void OnEnemyKilled(int score)
     {
         killCount++;
+        totalScore += score;
         enemiesAlive = Mathf.Max(0, enemiesAlive - 1);
 
         if (!spawning)
@@ -97,13 +109,9 @@ public class WaveManager : MonoBehaviour
         if (enemiesAlive > 0) return;
 
         if (totalWaves > 0 && currentWave >= totalWaves)
-        {
             gameUI?.ShowVictory();
-        }
         else
-        {
             StartCoroutine(StartNextWave());
-        }
     }
 
     void OnDrawGizmos()

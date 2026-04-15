@@ -26,12 +26,14 @@ public class GameUI : MonoBehaviour
     [Header("Wave & Score UI")]
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI killCountText;
-    [SerializeField] private TextMeshProUGUI waveBannerText;
-    [SerializeField] private float waveBannerDuration = 2.5f;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI countdownText;
 
     [Header("Screens")]
     [SerializeField] private GameObject deathScreen;
+    [SerializeField] private TextMeshProUGUI deathScoreText;
     [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private TextMeshProUGUI victoryScoreText;
 
     void Update()
     {
@@ -87,7 +89,11 @@ public class GameUI : MonoBehaviour
     {
         if (playerHealth == null || deathScreen == null) return;
 
-        deathScreen.SetActive(playerHealth.IsDead);
+        bool dead = playerHealth.IsDead;
+        deathScreen.SetActive(dead);
+
+        if (dead && deathScoreText != null && WaveManager.Instance != null)
+            deathScoreText.text = "Score: " + WaveManager.Instance.totalScore + "\nKills: " + WaveManager.Instance.killCount + "\nWave: " + WaveManager.Instance.currentWave;
     }
 
     void UpdateWaveUI()
@@ -99,27 +105,26 @@ public class GameUI : MonoBehaviour
 
         if (killCountText != null)
             killCountText.text = "Kills: " + WaveManager.Instance.killCount;
-    }
 
-    public void ShowWaveBanner(int wave)
-    {
-        if (waveBannerText == null) return;
-        StopCoroutine("WaveBannerRoutine");
-        StartCoroutine(WaveBannerRoutine(wave));
-    }
+        if (scoreText != null)
+            scoreText.text = "Score: " + WaveManager.Instance.totalScore;
 
-    IEnumerator WaveBannerRoutine(int wave)
-    {
-        waveBannerText.text = "WAVE " + wave;
-        waveBannerText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(waveBannerDuration);
-        waveBannerText.gameObject.SetActive(false);
+        if (countdownText != null)
+        {
+            bool counting = WaveManager.Instance.isCountingDown;
+            countdownText.gameObject.SetActive(counting);
+            if (counting)
+                countdownText.text = "Next wave in " + Mathf.CeilToInt(WaveManager.Instance.countdownTimer) + "...";
+        }
     }
 
     public void ShowVictory()
     {
-        if (victoryScreen != null)
-            victoryScreen.SetActive(true);
+        if (victoryScreen == null) return;
+        victoryScreen.SetActive(true);
+
+        if (victoryScoreText != null && WaveManager.Instance != null)
+            victoryScoreText.text = "Score: " + WaveManager.Instance.totalScore + "\nKills: " + WaveManager.Instance.killCount;
     }
 
     public void RestartGame()
