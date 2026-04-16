@@ -47,6 +47,11 @@ public class Weapon : MonoBehaviour
     [SerializeField] private GameObject bloodHitParticle;
     [SerializeField] private GameObject muzzleFlashPrefab;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField] private AudioClip reloadSound;
+
     private InputAction attackAction;
     private InputAction reloadAction;
     private float timeUntilNextShot;
@@ -113,7 +118,6 @@ public class Weapon : MonoBehaviour
             }
             else if (reserveAmmo > 0)
             {
-                // Auto reload when magazine is empty
                 StartCoroutine(Reload());
             }
         }
@@ -130,6 +134,8 @@ public class Weapon : MonoBehaviour
         SpawnMuzzleFlash();
         if (!automatic)
             weaponAnimator?.SetTrigger("Shoot");
+        if (shootSound != null && audioSource != null)
+            audioSource.PlayOneShot(shootSound);
 
         bool hitEnemy = false;
 
@@ -173,8 +179,9 @@ public class Weapon : MonoBehaviour
 
         if (automatic)
         {
-            // Standard reload: play once, load all ammo at end
             weaponAnimator?.SetTrigger("Reload");
+            if (reloadSound != null && audioSource != null)
+                audioSource.PlayOneShot(reloadSound);
             yield return new WaitForSeconds(reloadTime);
 
             int bulletsNeeded = magazineSize - currentAmmo;
@@ -196,11 +203,15 @@ public class Weapon : MonoBehaviour
                 if (isLastShell)
                 {
                     weaponAnimator?.SetTrigger("ReloadLast");
+                    if (reloadSound != null && audioSource != null)
+                        audioSource.PlayOneShot(reloadSound);
                     yield return new WaitForSeconds(reloadLastTime);
                 }
                 else
                 {
                     weaponAnimator?.SetTrigger("ReloadShell");
+                    if (reloadSound != null && audioSource != null)
+                        audioSource.PlayOneShot(reloadSound);
                     yield return new WaitForSeconds(reloadTime);
                 }
 
