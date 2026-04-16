@@ -41,8 +41,6 @@ public class AmmoPickup : MonoBehaviour
         {
             switcher.CurrentWeapon?.AddReserveAmmo(ammoAmount);
         }
-
-
         Destroy(gameObject);
     }
 }
