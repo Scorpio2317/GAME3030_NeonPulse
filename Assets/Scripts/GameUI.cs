@@ -29,6 +29,9 @@ public class GameUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI countdownText;
 
+    [Header("HUD")]
+    [SerializeField] private GameObject hud;
+
     [Header("Screens")]
     [SerializeField] private GameObject deathScreen;
     [SerializeField] private TextMeshProUGUI deathScoreText;
@@ -92,8 +95,12 @@ public class GameUI : MonoBehaviour
         bool dead = playerHealth.IsDead;
         deathScreen.SetActive(dead);
 
-        if (dead && deathScoreText != null && WaveManager.Instance != null)
-            deathScoreText.text = "Score: " + WaveManager.Instance.totalScore + "\nKills: " + WaveManager.Instance.killCount + "\nWave: " + WaveManager.Instance.currentWave;
+        if (dead)
+        {
+            if (hud != null) hud.SetActive(false);
+            if (deathScoreText != null && WaveManager.Instance != null)
+                deathScoreText.text = "Score: " + WaveManager.Instance.totalScore + "\nKills: " + WaveManager.Instance.killCount + "\nWave: " + WaveManager.Instance.currentWave;
+        }
     }
 
     void UpdateWaveUI()
@@ -122,6 +129,7 @@ public class GameUI : MonoBehaviour
     {
         if (victoryScreen == null) return;
         victoryScreen.SetActive(true);
+        if (hud != null) hud.SetActive(false);
 
         if (victoryScoreText != null && WaveManager.Instance != null)
             victoryScoreText.text = "Score: " + WaveManager.Instance.totalScore + "\nKills: " + WaveManager.Instance.killCount;
