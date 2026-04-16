@@ -8,6 +8,7 @@ public class WeaponSwitcher : MonoBehaviour
     private int currentIndex = 0;
 
     public Weapon CurrentWeapon => weapons.Length > 0 ? weapons[currentIndex] : null;
+    public Weapon[] GetWeapons() => weapons;
 
     void Start()
     {

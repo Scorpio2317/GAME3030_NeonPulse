@@ -24,6 +24,11 @@ public class Weapon : MonoBehaviour
     public float reloadLastTime = 0.53f;      // ReloadLastOne clip length
     public bool isReloading { get; private set; }
 
+    public void AddReserveAmmo(int amount)
+    {
+        reserveAmmo += amount;
+    }
+
     [Header("Fire Mode")]
     [SerializeField] private bool automatic = true;
 

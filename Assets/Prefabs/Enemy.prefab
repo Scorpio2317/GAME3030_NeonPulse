@@ -3194,6 +3194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   currentState: 0
+  moveSpeed: 3.5
   detectionRange: 30
   preferredRange: 12
   attackDamage: 10
@@ -3213,6 +3214,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
+  scoreValue: 100
+  ammoPickupPrefab: {fileID: 3478176602250743503, guid: bf458a7ea80242744aa8a3a6468c8f7b, type: 3}
+  dropChance: 0.3
 --- !u!195 &8686659034457212000
 NavMeshAgent:
   m_ObjectHideFlags: 0

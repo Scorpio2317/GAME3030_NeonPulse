@@ -3836,6 +3836,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
   scoreValue: 100
+  ammoPickupPrefab: {fileID: 3478176602250743503, guid: bf458a7ea80242744aa8a3a6468c8f7b, type: 3}
+  dropChance: 1
 --- !u!195 &-8959914384109268457
 NavMeshAgent:
   m_ObjectHideFlags: 0

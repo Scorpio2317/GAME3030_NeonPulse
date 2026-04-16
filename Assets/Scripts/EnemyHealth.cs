@@ -11,6 +11,11 @@ public class EnemyHealth : MonoBehaviour
     [Header("Score")]
     public int scoreValue = 100;
 
+    [Header("Ammo Drop")]
+    public GameObject ammoPickupPrefab;
+    [Range(0f, 1f)]
+    public float dropChance = 0.5f;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -37,6 +42,9 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<NavMeshAgent>().enabled = false;
 
         WaveManager.Instance?.OnEnemyKilled(scoreValue);
+
+        if (ammoPickupPrefab != null && Random.value <= dropChance)
+            Instantiate(ammoPickupPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
 
         Destroy(gameObject, 3f);
     }
